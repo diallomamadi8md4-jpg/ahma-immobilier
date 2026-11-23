@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
+// Polices auto-hébergées : le build ne dépend pas du réseau (next/font/google
+// téléchargeait les fichiers chez Google, ce qui pouvait faire échouer Render).
+const jakarta = localFont({
+  src: "./fonts/jakarta-latin.woff2",
   variable: "--font-jakarta",
+  weight: "200 800",
   display: "swap",
 });
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: "./fonts/inter-latin.woff2",
   variable: "--font-inter",
+  weight: "100 900",
   display: "swap",
 });
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+const playfair = localFont({
+  src: "./fonts/playfair-latin.woff2",
   variable: "--font-playfair",
+  weight: "400 900",
   display: "swap",
 });
 
