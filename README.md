@@ -2,7 +2,12 @@
 
 Application Next.js de gestion immobilière et catalogue public (Abidjan).
 
-## Accès
+## Application en ligne
+
+- **https://ahma-immobilier.onrender.com** (déploiement public, base PostgreSQL Neon).
+- Le plan gratuit Render met le service en veille après une période d'inactivité : le premier chargement peut prendre 30 à 60 secondes.
+
+## Accès local
 
 - Site public : **http://localhost:3000**
 - Espace administration : **http://localhost:3000/admin**
@@ -30,9 +35,9 @@ Application Next.js de gestion immobilière et catalogue public (Abidjan).
 ### Connexion administrateur
 
 - Email : `admin@ahma-immobilier.ci`
-- Mot de passe : `Ahma@Gestion2026!`
+- Mot de passe de production : défini via `npm run admin:password`, **jamais versionné** (voir [DEPLOY.md](DEPLOY.md)).
 
-> Les identifiants ne sont plus affichés sur la page de connexion. Changez le mot de passe en production et mettez à jour `JWT_SECRET` dans `.env` (32 caractères minimum).
+> Les identifiants ne sont plus affichés sur la page de connexion. Le secret `JWT_SECRET` est fourni par l'environnement d'hébergement (32 caractères minimum).
 
 ## Déploiement public
 

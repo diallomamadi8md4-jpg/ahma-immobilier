@@ -1,5 +1,15 @@
 # Déploiement public de Ahma Immobilier
 
+## Déploiement effectif
+
+- **URL publique** : https://ahma-immobilier.onrender.com
+- **Code source** : https://github.com/diallomamadi8md4-jpg/ahma-immobilier
+- **Hébergement** : Render (web service Docker, plan gratuit, région Virginia).
+- **Base de données** : Neon PostgreSQL (plan gratuit, région US East).
+- **Health check** : `/healthcheck` (endpoint statique sans base de données).
+- **Redéploiement manuel** : `render deploys create srv-dc1t5edg1s2s73eb2ji0` (CLI Render).
+- **Mot de passe admin** : à régénérer avec `npm run admin:password` ; ne jamais le committer.
+
 ## Pourquoi pas l’hébergement InfinityFree fourni ?
 
 InfinityFree (offre gratuite) exécute uniquement du PHP : ni Node.js, ni `npm run build`, ni processus serveur persistant. L’application utilise Next.js côté serveur, Prisma, l’authentification JWT, la messagerie, les alertes et les quittances PDF : elle ne peut donc pas fonctionner là-bas. De plus, un sous-domaine gratuit `*.freedev.app` ne peut pas être redirigé vers un autre hébergeur.
