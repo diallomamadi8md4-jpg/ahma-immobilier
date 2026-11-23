@@ -1,0 +1,223 @@
+// Ahma Immobilier — Schéma de base de données
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  nom          String
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Proprietaire {
+  id           Int      @id @default(autoincrement())
+  nom           String
+  prenom        String?
+  email         String?
+  telephone     String?
+  typePersonne  String   @default("physique") // physique | morale
+  societe       String?
+  adresse       String?
+  typePiece     String? // CNI | Passeport | RCCM
+  numeroPiece   String?
+  createdAt     DateTime @default(now())
+  biens         Bien[]
+}
+
+model Locataire {
+  id            Int      @id @default(autoincrement())
+  nom           String
+  prenom        String?
+  email         String?
+  telephone     String?
+  adresse       String?
+  profession    String?
+  typePiece     String? // CNI | Passeport
+  numeroPiece   String?
+  createdAt     DateTime @default(now())
+  contrats      Contrat[]
+  paiements     Paiement[]
+}
+
+model Bien {
+  id             Int      @id @default(autoincrement())
+  titre          String
+  type           String // villa | appartement | bureau | terrain | commerce | magasin
+  statut         String   @default("disponible") // disponible | loue | reserve | maintenance
+  quartier       String
+  adresse        String?
+  superficie     Float
+  nbChambres     Int?
+  nbSallesDeBain Int?
+  etage          Int?
+  description    String?
+  loyer          Int? // loyer mensuel FCFA
+  prixVente      Int? // prix de vente FCFA
+  caution        Int? // caution FCFA
+  equipements    String // JSON string: string[]
+  photos         String // JSON string: string[]
+  accent         String   @default("emerald") // couleur d'accent pour la galerie
+  createdAt      DateTime @default(now())
+  proprietaireId Int?
+  proprietaire   Proprietaire? @relation(fields: [proprietaireId], references: [id])
+  contrats       Contrat[]
+  paiements      Paiement[]
+  visites        Visite[]
+  signalements   Signalement[]
+  alertes        Alerte[]
+  conversations  Conversation[]
+  photosUploads  PhotoUpload[]
+}
+
+/// Photos ajoutées depuis l'administration, stockées en base pour survivre
+/// à un redéploiement (filesystem éphémère sur les hébergeurs cloud).
+model PhotoUpload {
+  id          Int      @id @default(autoincrement())
+  bienId      Int
+  contentType String
+  data        Bytes
+  createdAt   DateTime @default(now())
+  bien        Bien     @relation(fields: [bienId], references: [id], onDelete: Cascade)
+}
+
+/// Recherche enregistrée par un visiteur ou un client, avec alerts « nouveau bien ».
+model RechercheSauvegardee {
+  id             Int      @id @default(autoincrement())
+  email          String
+  nom            String?
+  token          String   @unique
+  criteres       String // JSON : voir lib/search.ts
+  frequence      String   @default("quotidien") // quotidien | hebdo
+  actif          Boolean  @default(true)
+  locataireId    Int?
+  proprietaireId Int?
+  createdAt      DateTime @default(now())
+  alertes        Alerte[]
+}
+
+model Alerte {
+  id          Int      @id @default(autoincrement())
+  rechercheId Int
+  bienId      Int
+  lu          Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  recherche   RechercheSauvegardee @relation(fields: [rechercheId], references: [id], onDelete: Cascade)
+  bien        Bien     @relation(fields: [bienId], references: [id], onDelete: Cascade)
+
+  @@unique([rechercheId, bienId])
+}
+
+/// Conversation de messagerie interne entre l'agence, un locataire et/ou un propriétaire.
+model Conversation {
+  id           Int                       @id @default(autoincrement())
+  sujet        String
+  bienId       Int?
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @default(now())
+  bien         Bien?                     @relation(fields: [bienId], references: [id], onDelete: SetNull)
+  participants ConversationParticipant[]
+  messages     MessageInterne[]
+}
+
+model ConversationParticipant {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  role           String // admin | locataire | proprietaire
+  refId          Int
+  nom            String
+  lastReadAt     DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, role, refId])
+}
+
+model MessageInterne {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  auteurRole     String
+  auteurRefId    Int
+  auteurNom      String
+  contenu        String
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model Signalement {
+  id          Int      @id @default(autoincrement())
+  bienId      Int?
+  nom         String
+  telephone   String
+  email       String?
+  type        String
+  urgence     String   @default("moyenne") // faible | moyenne | urgente
+  description String
+  statut      String   @default("ouvert") // ouvert | en_cours | resolu
+  createdAt   DateTime @default(now())
+  bien        Bien?    @relation(fields: [bienId], references: [id])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  nom       String
+  email     String
+  telephone String?
+  sujet     String
+  contenu   String
+  statut    String   @default("nouveau") // nouveau | traite | archive
+  createdAt DateTime @default(now())
+}
+
+model Visite {
+  id            Int      @id @default(autoincrement())
+  bienId        Int
+  nom           String
+  telephone     String
+  email         String?
+  dateSouhaitee String?
+  message       String?
+  statut        String   @default("nouvelle") // nouvelle | contactee | planifiee | annulee
+  createdAt     DateTime @default(now())
+  bien          Bien     @relation(fields: [bienId], references: [id])
+}
+
+model Contrat {
+  id           Int      @id @default(autoincrement())
+  bienId       Int
+  locataireId  Int
+  dateDebut    DateTime
+  dateFin      DateTime
+  loyerMensuel Int
+  caution      Int?
+  depot        Int?
+  frequence    String   @default("mensuel") // mensuel | trimestriel | annuel
+  statut       String   @default("actif") // actif | a_venir | expire | resilie
+  notes        String?
+  createdAt    DateTime @default(now())
+  bien         Bien      @relation(fields: [bienId], references: [id])
+  locataire    Locataire @relation(fields: [locataireId], references: [id])
+  paiements    Paiement[]
+}
+
+model Paiement {
+  id           Int      @id @default(autoincrement())
+  contratId    Int
+  locataireId  Int
+  bienId       Int
+  montant      Int
+  datePaiement DateTime @default(now())
+  moisConcerne String // ex "2024-03"
+  methode      String // especes | virement | mobile_money | chequier
+  statut       String   @default("paye") // paye | en_attente | retard
+  reference    String?
+  createdAt    DateTime @default(now())
+  contrat      Contrat   @relation(fields: [contratId], references: [id])
+  locataire    Locataire @relation(fields: [locataireId], references: [id])
+  bien         Bien      @relation(fields: [bienId], references: [id])
+}

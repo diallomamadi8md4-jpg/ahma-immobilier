@@ -1,0 +1,22 @@
+# Déploiement de l'application complète (Next.js + base PostgreSQL externe).
+# La base est fournie par Neon (plan gratuit permanent) : renseigner DATABASE_URL
+# dans les variables d'environnement du service Render au premier déploiement.
+services:
+  - type: web
+    name: ahma-immobilier
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
