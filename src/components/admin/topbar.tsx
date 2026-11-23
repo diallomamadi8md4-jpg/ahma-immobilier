@@ -52,7 +52,11 @@ export function Topbar({
             <span className="hidden md:inline">Voir le site</span>
           </Link>
           <ThemeToggle />
-          <div className="flex items-center gap-2.5 rounded-xl border border-surface bg-surface px-2 py-1.5">
+          <Link
+            href="/admin/mon-compte"
+            title="Mon compte"
+            className="flex items-center gap-2.5 rounded-xl border border-surface bg-surface px-2 py-1.5 transition hover:border-brand-500/40 hover:bg-surface-2"
+          >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient text-xs font-bold text-white">
               {initials(parts[0], parts[1])}
             </div>
@@ -60,7 +64,7 @@ export function Topbar({
               <div className="text-xs font-semibold text-ink-800 dark:text-ink-100">{user.nom}</div>
               <div className="truncate text-[10px] text-ink-400">{user.email}</div>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </header>

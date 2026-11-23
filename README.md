@@ -39,6 +39,13 @@ Application Next.js de gestion immobilière et catalogue public (Abidjan).
 
 > Les identifiants ne sont plus affichés sur la page de connexion. Le secret `JWT_SECRET` est fourni par l'environnement d'hébergement (32 caractères minimum).
 
+### Gestion des comptes admin
+
+- `/admin/comptes` : créer un administrateur, modifier son nom/email/mot de passe, supprimer un accès (sauf le sien et le dernier compte).
+- `/admin/mon-compte` : modifier son propre profil et changer son mot de passe (avec vérification de l'ancien).
+
+> L'accès à ces écrans et aux API correspondantes est réservé aux administrateurs connectés.
+
 ## Déploiement public
 
 Pour héberger l’application complète en ligne (Next.js + base PostgreSQL + portails + administration), suivre [DEPLOY.md](DEPLOY.md). L’offre InfinityFree gratuite n’exécute que du PHP et ne peut pas faire fonctionner cette application.

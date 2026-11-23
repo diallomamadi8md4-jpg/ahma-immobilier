@@ -18,6 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Globe,
+  ShieldCheck,
+  UserCog,
 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { LogoutButton } from "./logout-button";
@@ -35,14 +37,25 @@ export const ADMIN_NAV = [
   { href: "/admin/messagerie", label: "Messagerie interne", icon: MessagesSquare },
   { href: "/admin/alertes", label: "Alertes & recherches", icon: BellRing },
   { href: "/admin/signalements", label: "Signalements", icon: Wrench },
+  { href: "/admin/comptes", label: "Comptes administrateurs", icon: ShieldCheck },
+  { href: "/admin/mon-compte", label: "Mon compte", icon: UserCog },
   { href: "/api/export/biens", label: "Exporter les biens", icon: Download },
 ];
 
+const group = (...hrefs: string[]) => ADMIN_NAV.filter((item) => hrefs.includes(item.href));
+
 const NAV_GROUPS = [
-  { label: "Pilotage", items: ADMIN_NAV.slice(0, 1) },
-  { label: "Patrimoine", items: ADMIN_NAV.slice(1, 6) },
-  { label: "Relation client", items: ADMIN_NAV.slice(6, 11) },
-  { label: "Outils", items: ADMIN_NAV.slice(11) },
+  { label: "Pilotage", items: group("/admin") },
+  {
+    label: "Patrimoine",
+    items: group("/admin/biens", "/admin/locataires", "/admin/proprietaires", "/admin/contrats", "/admin/paiements"),
+  },
+  {
+    label: "Relation client",
+    items: group("/admin/visites", "/admin/messages", "/admin/messagerie", "/admin/alertes", "/admin/signalements"),
+  },
+  { label: "Administration", items: group("/admin/comptes", "/admin/mon-compte") },
+  { label: "Outils", items: group("/api/export/biens") },
 ];
 
 export function SidebarContent({
