@@ -12,6 +12,7 @@ model Admin {
   id           Int      @id @default(autoincrement())
   email        String   @unique
   nom          String
+  poste        String   @default("Administrateur") // poste occupé dans l'agence
   passwordHash String
   createdAt    DateTime @default(now())
 }

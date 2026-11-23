@@ -11,7 +11,7 @@ export function Topbar({
   title,
 }: {
   onMenu: () => void;
-  user: { nom: string; email: string };
+  user: { nom: string; email: string; poste?: string };
   title: string;
 }) {
   const parts = user.nom.split(" ");
@@ -62,7 +62,10 @@ export function Topbar({
             </div>
             <div className="hidden leading-tight sm:block">
               <div className="text-xs font-semibold text-ink-800 dark:text-ink-100">{user.nom}</div>
-              <div className="truncate text-[10px] text-ink-400">{user.email}</div>
+              {user.poste && (
+                <div className="truncate text-[10px] font-medium text-gold-600 dark:text-gold-400">{user.poste}</div>
+              )}
+              <div className="max-w-[150px] truncate text-[10px] text-ink-400">{user.email}</div>
             </div>
           </Link>
         </div>

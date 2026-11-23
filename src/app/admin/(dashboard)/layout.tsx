@@ -8,6 +8,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await getSession();
   if (!session) redirect("/admin/login");
   return (
-    <AdminShell user={{ nom: session.nom, email: session.email }}>{children}</AdminShell>
+    <AdminShell user={{ nom: session.nom, email: session.email, poste: session.poste }}>{children}</AdminShell>
   );
 }

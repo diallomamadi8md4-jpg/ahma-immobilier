@@ -65,7 +65,7 @@ async function main() {
   // ---- Admin ----
   const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
   await prisma.admin.create({
-    data: { email: ADMIN_EMAIL, nom: "Aïcha Hma", passwordHash },
+    data: { email: ADMIN_EMAIL, nom: "Aïcha Hma", poste: "Directrice de l'agence", passwordHash },
   });
   console.log(`✅ Admin créé : ${ADMIN_EMAIL}`);
 

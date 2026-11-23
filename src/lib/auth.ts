@@ -15,6 +15,7 @@ export interface SessionPayload extends JWTPayload {
   id: number;
   email: string;
   nom: string;
+  poste?: string;
 }
 
 export async function signSession(payload: SessionPayload): Promise<string> {

@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Identifiants invalides." }, { status: 401 });
     }
 
-    await createSession({ id: admin.id, email: admin.email, nom: admin.nom });
+    await createSession({ id: admin.id, email: admin.email, nom: admin.nom, poste: admin.poste });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Une erreur est survenue. Réessayez." }, { status: 500 });

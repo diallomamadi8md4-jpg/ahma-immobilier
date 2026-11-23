@@ -6,10 +6,11 @@ import { Eye, EyeOff, KeyRound, Loader2, Pencil, Plus, ShieldCheck, Trash2, X } 
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { initials } from "@/lib/utils";
+import { POSTES_ADMIN_SUGGESTIONS } from "@/lib/postes";
 
-export type AdminItem = { id: number; nom: string; email: string; createdAt: string };
+export type AdminItem = { id: number; nom: string; email: string; poste: string; createdAt: string };
 
-type FormState = { id: number | null; nom: string; email: string; password: string };
+type FormState = { id: number | null; nom: string; email: string; poste: string; password: string };
 
 export function AdminComptes({ admins, currentId }: { admins: AdminItem[]; currentId: number }) {
   const router = useRouter();
@@ -22,14 +23,14 @@ export function AdminComptes({ admins, currentId }: { admins: AdminItem[]; curre
   const [busyId, setBusyId] = useState<number | null>(null);
 
   function openNew() {
-    setForm({ id: null, nom: "", email: "", password: "" });
+    setForm({ id: null, nom: "", email: "", poste: "Administrateur", password: "" });
     setShowPassword(false);
     setError("");
     setSuccess("");
   }
 
   function openEdit(admin: AdminItem) {
-    setForm({ id: admin.id, nom: admin.nom, email: admin.email, password: "" });
+    setForm({ id: admin.id, nom: admin.nom, email: admin.email, poste: admin.poste, password: "" });
     setShowPassword(false);
     setError("");
     setSuccess("");
@@ -46,7 +47,7 @@ export function AdminComptes({ admins, currentId }: { admins: AdminItem[]; curre
       const res = await fetch(editing ? `/api/admin/comptes/${form.id}` : "/api/admin/comptes", {
         method: editing ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nom: form.nom, email: form.email, ...(form.password ? { password: form.password } : {}) }),
+        body: JSON.stringify({ nom: form.nom, email: form.email, poste: form.poste, ...(form.password ? { password: form.password } : {}) }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -158,6 +159,23 @@ export function AdminComptes({ admins, currentId }: { admins: AdminItem[]; curre
                 className="input-base"
               />
             </Field>
+            <Field label="Poste dans l'agence *" hint="Fonction occupée au sein de l'agence.">
+              <input
+                required
+                minLength={2}
+                maxLength={80}
+                list="postes-admin"
+                value={form.poste}
+                onChange={(e) => setForm({ ...form, poste: e.target.value })}
+                placeholder="Gestionnaire immobilier"
+                className="input-base"
+              />
+              <datalist id="postes-admin">
+                {POSTES_ADMIN_SUGGESTIONS.map((poste) => (
+                  <option key={poste} value={poste} />
+                ))}
+              </datalist>
+            </Field>
             <Field
               label={form.id ? "Nouveau mot de passe (facultatif)" : "Mot de passe *"}
               hint={form.id ? "Laissez vide pour conserver le mot de passe actuel. 10 caractères minimum." : "10 caractères minimum."}
@@ -197,10 +215,11 @@ export function AdminComptes({ admins, currentId }: { admins: AdminItem[]; curre
 
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-sm">
+          <table className="w-full min-w-[760px] text-sm">
             <thead>
               <tr className="border-b border-surface text-left text-xs uppercase tracking-wide text-ink-400">
                 <th className="px-5 py-3 font-semibold">Administrateur</th>
+                <th className="px-5 py-3 font-semibold">Poste</th>
                 <th className="px-5 py-3 font-semibold">Email</th>
                 <th className="px-5 py-3 font-semibold">Créé le</th>
                 <th className="px-5 py-3 text-right font-semibold">Actions</th>
@@ -223,6 +242,11 @@ export function AdminComptes({ admins, currentId }: { admins: AdminItem[]; curre
                         )}
                       </div>
                     </div>
+                  </td>
+                  <td className="px-5 py-3">
+                    <span className="inline-flex rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+                      {admin.poste}
+                    </span>
                   </td>
                   <td className="px-5 py-3 text-ink-600 dark:text-ink-300">{admin.email}</td>
                   <td className="px-5 py-3 text-xs text-ink-400">

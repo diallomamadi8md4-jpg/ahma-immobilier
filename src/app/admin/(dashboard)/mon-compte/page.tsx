@@ -14,7 +14,7 @@ export default async function MonComptePage() {
 
   const admin = await prisma.admin.findUnique({
     where: { id: session.id },
-    select: { id: true, nom: true, email: true, createdAt: true },
+    select: { id: true, nom: true, email: true, poste: true, createdAt: true },
   });
   if (!admin) redirect("/admin/login");
 

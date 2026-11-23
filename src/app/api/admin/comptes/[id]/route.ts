@@ -29,10 +29,14 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
     const body = await req.json();
     const nom = String(body?.nom ?? "").trim();
     const email = String(body?.email ?? "").toLowerCase().trim();
+    const poste = String(body?.poste ?? "").trim();
     const password = String(body?.password ?? "");
 
     if (nom.length < 2) {
       return NextResponse.json({ error: "Le nom doit contenir au moins 2 caractères." }, { status: 400 });
+    }
+    if (poste.length < 2 || poste.length > 80) {
+      return NextResponse.json({ error: "Indiquez le poste occupé dans l'agence (2 à 80 caractères)." }, { status: 400 });
     }
     if (!EMAIL_RE.test(email)) {
       return NextResponse.json({ error: "Adresse email invalide." }, { status: 400 });
@@ -54,15 +58,16 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
       data: {
         nom: nom.slice(0, 120),
         email: email.slice(0, 160),
+        poste: poste.slice(0, 80),
         ...(password ? { passwordHash: await bcrypt.hash(password, 12) } : {}),
       },
-      select: { id: true, nom: true, email: true, createdAt: true },
+      select: { id: true, nom: true, email: true, poste: true, createdAt: true },
     });
 
     // Si l'admin modifie son propre profil, on rafraîchit le cookie pour que
     // le nom et l'email affichés dans l'interface restent cohérents.
     if (actor.session.id === id) {
-      await createSession({ id: admin.id, email: admin.email, nom: admin.nom });
+      await createSession({ id: admin.id, email: admin.email, nom: admin.nom, poste: admin.poste });
     }
     revalidatePath("/admin/comptes");
     revalidatePath("/admin/mon-compte");

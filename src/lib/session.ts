@@ -10,11 +10,12 @@ const COOKIE_OPTS = {
   secure: process.env.NODE_ENV === "production",
 };
 
-export async function createSession(admin: { id: number; email: string; nom: string }) {
+export async function createSession(admin: { id: number; email: string; nom: string; poste?: string | null }) {
   const token = await signSession({
     id: admin.id,
     email: admin.email,
     nom: admin.nom,
+    poste: admin.poste ?? "",
   });
   cookies().set(SESSION_COOKIE, token, COOKIE_OPTS);
 }

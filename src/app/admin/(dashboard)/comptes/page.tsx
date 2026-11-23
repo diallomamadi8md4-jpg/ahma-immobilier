@@ -13,7 +13,7 @@ export default async function ComptesAdminPage() {
   if (!session) redirect("/admin/login");
 
   const admins = await prisma.admin.findMany({
-    select: { id: true, nom: true, email: true, createdAt: true },
+    select: { id: true, nom: true, email: true, poste: true, createdAt: true },
     orderBy: { id: "asc" },
   });
 

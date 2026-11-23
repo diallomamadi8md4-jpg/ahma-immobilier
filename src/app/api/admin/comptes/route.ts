@@ -20,7 +20,7 @@ export async function GET() {
     return NextResponse.json({ error: "Authentification requise." }, { status: 401 });
   }
   const admins = await prisma.admin.findMany({
-    select: { id: true, nom: true, email: true, createdAt: true },
+    select: { id: true, nom: true, email: true, poste: true, createdAt: true },
     orderBy: { id: "asc" },
   });
   return NextResponse.json({ admins });
@@ -34,10 +34,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const nom = String(body?.nom ?? "").trim();
     const email = String(body?.email ?? "").toLowerCase().trim();
+    const poste = String(body?.poste ?? "").trim();
     const password = String(body?.password ?? "");
 
     if (nom.length < 2) {
       return NextResponse.json({ error: "Le nom doit contenir au moins 2 caractères." }, { status: 400 });
+    }
+    if (poste.length < 2 || poste.length > 80) {
+      return NextResponse.json({ error: "Indiquez le poste occupé dans l'agence (2 à 80 caractères)." }, { status: 400 });
     }
     if (!EMAIL_RE.test(email)) {
       return NextResponse.json({ error: "Adresse email invalide." }, { status: 400 });
@@ -50,8 +54,8 @@ export async function POST(req: NextRequest) {
     }
 
     const admin = await prisma.admin.create({
-      data: { nom: nom.slice(0, 120), email: email.slice(0, 160), passwordHash: await bcrypt.hash(password, 12) },
-      select: { id: true, nom: true, email: true, createdAt: true },
+      data: { nom: nom.slice(0, 120), email: email.slice(0, 160), poste: poste.slice(0, 80), passwordHash: await bcrypt.hash(password, 12) },
+      select: { id: true, nom: true, email: true, poste: true, createdAt: true },
     });
     revalidatePath("/admin/comptes");
     return NextResponse.json({ ok: true, admin }, { status: 201 });

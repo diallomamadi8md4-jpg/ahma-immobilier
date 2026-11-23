@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, LockKeyhole, Save, ShieldCheck, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import { POSTES_ADMIN_SUGGESTIONS } from "@/lib/postes";
 
-export type MonCompteAdmin = { id: number; nom: string; email: string; createdAt: string };
+export type MonCompteAdmin = { id: number; nom: string; email: string; poste: string; createdAt: string };
 
 export function MonCompteForm({ admin }: { admin: MonCompteAdmin }) {
   const router = useRouter();
   const [nom, setNom] = useState(admin.nom);
   const [email, setEmail] = useState(admin.email);
+  const [poste, setPoste] = useState(admin.poste);
   const [actuel, setActuel] = useState("");
   const [nouveau, setNouveau] = useState("");
   const [confirmation, setConfirmation] = useState("");
@@ -67,7 +69,7 @@ export function MonCompteForm({ admin }: { admin: MonCompteAdmin }) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            void submit({ nom, email }, setSavingProfile, "Profil mis à jour.");
+            void submit({ nom, email, poste }, setSavingProfile, "Profil mis à jour.");
           }}
           className="surface-panel p-6"
         >
@@ -87,6 +89,23 @@ export function MonCompteForm({ admin }: { admin: MonCompteAdmin }) {
             </Field>
             <Field label="Email *">
               <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input-base" />
+            </Field>
+            <Field label="Poste dans l'agence *" hint="Votre fonction au sein de l'agence.">
+              <input
+                required
+                minLength={2}
+                maxLength={80}
+                list="postes-admin-mon-compte"
+                value={poste}
+                onChange={(e) => setPoste(e.target.value)}
+                className="input-base"
+                placeholder="Gestionnaire immobilier"
+              />
+              <datalist id="postes-admin-mon-compte">
+                {POSTES_ADMIN_SUGGESTIONS.map((p) => (
+                  <option key={p} value={p} />
+                ))}
+              </datalist>
             </Field>
           </div>
 

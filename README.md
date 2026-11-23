@@ -41,8 +41,10 @@ Application Next.js de gestion immobilière et catalogue public (Abidjan).
 
 ### Gestion des comptes admin
 
-- `/admin/comptes` : créer un administrateur, modifier son nom/email/mot de passe, supprimer un accès (sauf le sien et le dernier compte).
-- `/admin/mon-compte` : modifier son propre profil et changer son mot de passe (avec vérification de l'ancien).
+- `/admin/comptes` : créer un administrateur avec son **poste dans l'agence**, modifier son nom/email/poste/mot de passe, supprimer un accès (sauf le sien et le dernier compte).
+- `/admin/mon-compte` : modifier son propre profil (y compris le poste) et changer son mot de passe (avec vérification de l'ancien).
+
+> Le poste est affiché dans la liste des comptes et dans l'en-tête de l'espace admin.
 
 > L'accès à ces écrans et aux API correspondantes est réservé aux administrateurs connectés.
 

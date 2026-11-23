@@ -21,6 +21,7 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const nom = String(body?.nom ?? admin.nom).trim();
     const email = String(body?.email ?? admin.email).toLowerCase().trim();
+    const poste = String(body?.poste ?? admin.poste).trim();
     const actuel = String(body?.motDePasseActuel ?? "");
     const nouveau = String(body?.nouveauMotDePasse ?? "");
     const confirmation = String(body?.confirmation ?? "");
@@ -31,6 +32,9 @@ export async function PATCH(req: NextRequest) {
     }
     if (!EMAIL_RE.test(email)) {
       return NextResponse.json({ error: "Adresse email invalide." }, { status: 400 });
+    }
+    if (poste.length < 2 || poste.length > 80) {
+      return NextResponse.json({ error: "Indiquez le poste occupé dans l'agence (2 à 80 caractères)." }, { status: 400 });
     }
 
     if (changePassword) {
@@ -58,12 +62,13 @@ export async function PATCH(req: NextRequest) {
       data: {
         nom: nom.slice(0, 120),
         email: email.slice(0, 160),
+        poste: poste.slice(0, 80),
         ...(changePassword ? { passwordHash: await bcrypt.hash(nouveau, 12) } : {}),
       },
-      select: { id: true, nom: true, email: true },
+      select: { id: true, nom: true, email: true, poste: true },
     });
 
-    await createSession({ id: updated.id, email: updated.email, nom: updated.nom });
+    await createSession({ id: updated.id, email: updated.email, nom: updated.nom, poste: updated.poste });
     revalidatePath("/admin/mon-compte");
     revalidatePath("/admin");
     return NextResponse.json({ ok: true, admin: updated });

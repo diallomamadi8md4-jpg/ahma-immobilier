@@ -11,7 +11,7 @@ export function AdminShell({
   user,
   children,
 }: {
-  user: { nom: string; email: string };
+  user: { nom: string; email: string; poste?: string };
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
